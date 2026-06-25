@@ -44,10 +44,11 @@
             gap: 3px;
         }
         .tile {
-            background-size: cover;
+            background-color: #0d0d0f;
+            background-size: contain;   /* show the whole photo, no cropping */
             background-position: center center;
             background-repeat: no-repeat;
-            filter: contrast(1.03) saturate(105%);
+            filter: contrast(1.03) saturate(105%) brightness(1.05);
         }
         /* 5 photos in a 3x2 grid: the last one spans the final two cells */
         .tile:nth-child(5) { grid-column: span 2; }
@@ -56,9 +57,10 @@
             position: absolute;   /* taken out of the grid flow */
             inset: 0;
             z-index: 1;
+            /* darker only right behind the card, light at the edges */
             background:
-                radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.78) 80%),
-                linear-gradient(rgba(10,10,15,0.45), rgba(10,10,15,0.65));
+                radial-gradient(ellipse 60% 55% at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.20) 70%, rgba(0,0,0,0.05) 100%),
+                linear-gradient(rgba(10,10,15,0.10), rgba(10,10,15,0.18));
         }
 
         @media (max-width: 768px) {
