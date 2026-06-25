@@ -391,20 +391,26 @@
 
         function dodge(e) {
             if (e) e.preventDefault();
-            const margin = 16;
-            const w = noBtn.offsetWidth;
-            const h = noBtn.offsetHeight;
             if (!dodging) {
                 dodging = true;
                 noBtn.style.position = 'fixed';
             }
+            /* Update the label + tilt FIRST so we measure the real (new) size */
+            teaseIdx = (teaseIdx + 1) % teases.length;
+            noBtn.textContent = teases[teaseIdx];
+            const tilt = Math.random() * 24 - 12;
+            noBtn.style.transform = 'rotate(' + tilt + 'deg)';
+
+            /* Measure after the text/rotation change, then clamp inside the viewport.
+               Extra padding accounts for the bounding box growing when rotated. */
+            const margin = 16;
+            const rotPad = 12;
+            const w = noBtn.offsetWidth + rotPad;
+            const h = noBtn.offsetHeight + rotPad;
             const maxLeft = Math.max(margin, window.innerWidth - w - margin);
             const maxTop = Math.max(margin, window.innerHeight - h - margin);
             noBtn.style.left = (margin + Math.random() * (maxLeft - margin)) + 'px';
             noBtn.style.top = (margin + Math.random() * (maxTop - margin)) + 'px';
-            noBtn.style.transform = 'rotate(' + (Math.random() * 24 - 12) + 'deg)';
-            teaseIdx = (teaseIdx + 1) % teases.length;
-            noBtn.textContent = teases[teaseIdx];
         }
 
         /* Run away on any attempt to interact (mouse + touch), never let a click land */
