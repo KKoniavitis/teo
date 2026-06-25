@@ -163,11 +163,12 @@
         #no-btn {
             background: linear-gradient(135deg, #ff6b5e, #e74c3c);
             color: #fff;
-            position: fixed;
-            transition: top 0.18s ease-out, left 0.18s ease-out, transform 0.18s ease-out;
+            position: relative;
+            transition: top 0.18s ease-out, left 0.18s ease-out;
             z-index: 1000;
             box-shadow: 0 8px 22px rgba(231, 76, 60, 0.5);
         }
+        #no-btn.loose { position: fixed; }
 
         /* Countdown */
         #countdown {
@@ -390,17 +391,22 @@
 
         function dodge(e) {
             if (e) e.preventDefault();
-            noBtn.style.position = 'fixed';
 
-            /* Change the label first, then measure the real width with that text */
+            /* Change the label first, then measure the real size with that text */
             teaseIdx = (teaseIdx + 1) % teases.length;
             noBtn.textContent = teases[teaseIdx];
 
-            const margin = 50;
-            const maxX = Math.max(0, window.innerWidth - noBtn.clientWidth - margin);
-            const maxY = Math.max(0, window.innerHeight - noBtn.clientHeight - margin);
-            noBtn.style.left = Math.floor(Math.random() * maxX) + 'px';
-            noBtn.style.top = Math.floor(Math.random() * maxY) + 'px';
+            /* Switch to fixed positioning only now (it starts in the normal row) */
+            noBtn.classList.add('loose');
+
+            const margin = 20;
+            const w = noBtn.offsetWidth;
+            const h = noBtn.offsetHeight;
+            /* x is in [margin, innerWidth - w - margin]  ->  always fully on-screen */
+            const x = margin + Math.random() * Math.max(0, window.innerWidth - w - margin * 2);
+            const y = margin + Math.random() * Math.max(0, window.innerHeight - h - margin * 2);
+            noBtn.style.left = Math.round(x) + 'px';
+            noBtn.style.top = Math.round(y) + 'px';
         }
 
         /* Run away on hover / tap / attempted click, never let a click land */
