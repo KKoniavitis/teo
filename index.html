@@ -3,147 +3,381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Για τον [Όνομα Φίλου]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+    <title>Θα γίνεις ο Κουμπάρος μου;</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Comfortaa:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --gold: #d4af37;
+            --gold-soft: #f0d98c;
+            --ink: #0d0d0f;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body { height: 100%; }
+
         body {
             font-family: 'Comfortaa', sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), 
-                        url('friends.jpg') no-repeat center center fixed;
-            background-size: cover;
+            background: #000;
             color: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            padding: 24px;
             overflow: hidden;
+            position: relative;
         }
+
+        /* Background photo + cinematic overlay */
+        .bg {
+            position: fixed;
+            inset: 0;
+            background: url('friends.jpg') no-repeat center center;
+            background-size: cover;
+            filter: grayscale(15%) contrast(1.05);
+            transform: scale(1.08);
+            animation: slowZoom 25s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+        .bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at center, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.82) 75%),
+                linear-gradient(rgba(10,10,15,0.65), rgba(10,10,15,0.9));
+        }
+        @keyframes slowZoom {
+            from { transform: scale(1.08); }
+            to   { transform: scale(1.18); }
+        }
+
+        /* Floating hearts */
+        .hearts { position: fixed; inset: 0; overflow: hidden; z-index: 1; pointer-events: none; }
+        .heart {
+            position: absolute;
+            bottom: -40px;
+            font-size: 18px;
+            opacity: 0;
+            animation: floatUp linear infinite;
+            filter: drop-shadow(0 0 6px rgba(212,175,55,0.4));
+        }
+        @keyframes floatUp {
+            0%   { transform: translateY(0) rotate(0deg);   opacity: 0; }
+            10%  { opacity: 0.9; }
+            90%  { opacity: 0.7; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Card */
         .card {
-            background: rgba(30, 30, 30, 0.95);
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-            border: 2px solid #cfb53b;
-            max-width: 450px;
-            width: 85%;
-            text-align: center;
+            position: relative;
             z-index: 10;
+            background: rgba(20, 20, 24, 0.55);
+            backdrop-filter: blur(16px) saturate(120%);
+            -webkit-backdrop-filter: blur(16px) saturate(120%);
+            padding: 3rem 2.6rem;
+            border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08);
+            border: 1px solid rgba(212,175,55,0.45);
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            animation: cardIn 0.9s cubic-bezier(.2,.8,.2,1) both;
         }
-        h1 { font-size: 2.2rem; color: #cfb53b; margin-top: 0; }
-        p { line-height: 1.6; }
-        .btn-container { 
-            margin-top: 2.5rem; 
-            display: flex; 
-            justify-content: center; 
-            gap: 20px; 
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.8rem;
+            line-height: 1.1;
+            margin: 0 0 0.4rem;
+            background: linear-gradient(120deg, var(--gold-soft), var(--gold), #fff7df, var(--gold));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s linear infinite;
+        }
+        @keyframes shimmer { to { background-position: 200% center; } }
+
+        h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.9rem;
+            color: #fff;
+            margin: 1.2rem 0 0;
+            font-weight: 600;
+        }
+
+        p { line-height: 1.7; font-size: 1rem; color: #e8e8ea; margin: 0.6rem 0; }
+
+        .date-pill {
+            display: inline-block;
+            margin-top: 0.4rem;
+            padding: 6px 16px;
+            border: 1px solid rgba(212,175,55,0.5);
+            border-radius: 999px;
+            color: var(--gold-soft);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .divider {
+            width: 60px; height: 2px; margin: 1.4rem auto;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        /* Buttons */
+        .btn-container {
+            margin-top: 1.8rem;
+            display: flex;
+            justify-content: center;
+            gap: 18px;
             min-height: 60px;
+            flex-wrap: wrap;
         }
         .btn {
-            background-color: #cfb53b;
+            font-family: 'Comfortaa', sans-serif;
+            background: linear-gradient(135deg, var(--gold-soft), var(--gold));
             color: #1a1a1a;
-            padding: 14px 28px;
+            padding: 14px 30px;
             border: none;
-            border-radius: 10px;
-            font-weight: bold;
+            border-radius: 12px;
+            font-weight: 700;
             cursor: pointer;
-            font-size: 1.1rem;
-            transition: transform 0.2s ease;
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 24px rgba(212,175,55,0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .btn:hover { transform: scale(1.05); }
-        
-        /* Το "άπιαστο" κουμπί */
-        #no-btn {
-    		background-color: #e74c3c;
-    		color: white;
-    		position: fixed; 
-    		transition: all 0.15s ease-out;
-    		z-index: 1000;
-    		box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4); /* Κόκκινη σκιά για να "χτυπάει" στο μάτι */
-	}
+        .btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 12px 30px rgba(212,175,55,0.5); }
+        .btn:active { transform: translateY(0) scale(0.99); }
 
-        #countdown {
-            margin-top: 2.5rem;
-            font-size: 0.85rem;
-            color: #cfb53b;
-            letter-spacing: 1px;
-            border-top: 1px solid #444;
-            padding-top: 1.5rem;
+        #no-btn {
+            background: linear-gradient(135deg, #ff6b5e, #e74c3c);
+            color: #fff;
+            position: fixed;
+            transition: top 0.18s ease-out, left 0.18s ease-out, transform 0.18s ease-out;
+            z-index: 1000;
+            box-shadow: 0 8px 22px rgba(231, 76, 60, 0.5);
         }
+
+        /* Countdown */
+        #countdown {
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            padding-top: 1.4rem;
+        }
+        #countdown .label {
+            font-size: 0.72rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold-soft);
+            opacity: 0.85;
+        }
+        .timer-grid {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 0.9rem;
+        }
+        .time-box {
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 12px;
+            padding: 10px 6px;
+            min-width: 64px;
+        }
+        .time-box .num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+        }
+        .time-box .unit {
+            display: block;
+            margin-top: 4px;
+            font-size: 0.62rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--gold-soft);
+            opacity: 0.8;
+        }
+
         #question-area { display: none; }
+
+        .fade-in { animation: cardIn 0.7s cubic-bezier(.2,.8,.2,1) both; }
+
+        /* Confetti canvas */
+        #confetti {
+            position: fixed; inset: 0; z-index: 5000; pointer-events: none; display: none;
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 2.2rem 1.5rem; }
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.5rem; }
+            .time-box { min-width: 56px; }
+            .time-box .num { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
+    <div class="bg"></div>
+    <div class="hearts" id="hearts"></div>
+    <canvas id="confetti"></canvas>
+
     <div class="card">
         <div id="intro-area">
             <h1>Αδερφέ μου!</h1>
-            <p>Έχουμε περάσει πολλά, αλλά αυτό που έρχεται δεν το γλιτώνουμε...</p>
-            <button class="btn" onclick="reveal()">Δες τι εννοώ</button>
+            <div class="divider"></div>
+            <p>Έχουμε περάσει πολλά μαζί... <br>αλλά αυτό που έρχεται δεν το γλιτώνεις. 😏</p>
+            <div class="btn-container" style="min-height:auto;">
+                <button class="btn" onclick="reveal()">Δες τι εννοώ</button>
+            </div>
         </div>
 
         <div id="question-area">
             <h1>Παντρεύομαι! 🤵‍♂️</h1>
-            <p>22 Μαΐου 2027. Σημείωσε την ημερομηνία.</p>
-            <h2 style="color: #fff;">Θα γίνεις ο Κουμπάρος μου;</h2>
-            
+            <span class="date-pill">22 ΜΑΪΟΥ 2027</span>
+            <div class="divider"></div>
+            <h2>Θα γίνεις ο Κουμπάρος μου;</h2>
+
             <div class="btn-container">
                 <button class="btn" onclick="celebrate()">ΕΝΝΟΕΙΤΑΙ!</button>
-                <button class="btn" id="no-btn" onmouseover="moveButton()">ΟΧΙ</button>
+                <button class="btn" id="no-btn" onmouseover="moveButton()" onclick="moveButton()">ΟΧΙ</button>
             </div>
 
             <div id="countdown">
-                Η αντίστροφη μέτρηση άρχισε: <br>
-                <b id="timer" style="font-size: 1.1rem;">...</b>
+                <div class="label">Η αντίστροφη μέτρηση άρχισε</div>
+                <div class="timer-grid">
+                    <div class="time-box"><div class="num" id="d">--</div><span class="unit">Μέρες</span></div>
+                    <div class="time-box"><div class="num" id="h">--</div><span class="unit">Ώρες</span></div>
+                    <div class="time-box"><div class="num" id="m">--</div><span class="unit">Λεπτά</span></div>
+                    <div class="time-box"><div class="num" id="s">--</div><span class="unit">Δευτ.</span></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        /* Floating hearts generator */
+        (function makeHearts() {
+            const wrap = document.getElementById('hearts');
+            const symbols = ['🤍', '🥂', '🤵', '💛', '✨'];
+            for (let i = 0; i < 18; i++) {
+                const h = document.createElement('div');
+                h.className = 'heart';
+                h.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.fontSize = (14 + Math.random() * 22) + 'px';
+                h.style.animationDuration = (9 + Math.random() * 12) + 's';
+                h.style.animationDelay = (Math.random() * 12) + 's';
+                wrap.appendChild(h);
+            }
+        })();
+
         function reveal() {
             document.getElementById('intro-area').style.display = 'none';
-            document.getElementById('question-area').style.display = 'block';
+            const q = document.getElementById('question-area');
+            q.style.display = 'block';
+            q.classList.add('fade-in');
             startTimer();
         }
 
-        // Αντίστροφη Μέτρηση για 22 Μαΐου 2027
+        /* Countdown to 22 May 2027, 19:00 */
         function startTimer() {
             const weddingDate = new Date("May 22, 2027 19:00:00").getTime();
-            
-            const x = setInterval(function() {
-                const now = new Date().getTime();
-                const diff = weddingDate - now;
+            const pad = n => String(n).padStart(2, '0');
 
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-                document.getElementById("timer").innerHTML = days + " μέρες, " + hours + " ώρες και " + mins + " λεπτά";
-
+            const tick = function () {
+                const diff = weddingDate - new Date().getTime();
                 if (diff < 0) {
-                    clearInterval(x);
-                    document.getElementById("timer").innerHTML = "Η ΩΡΑ Η ΚΑΛΗ!";
+                    document.querySelector('.timer-grid').innerHTML =
+                        '<div class="label" style="font-size:1.1rem;color:#fff;">Η ΩΡΑ Η ΚΑΛΗ! 🍾</div>';
+                    clearInterval(timerId);
+                    return;
                 }
-            }, 1000);
+                document.getElementById('d').textContent = Math.floor(diff / 86400000);
+                document.getElementById('h').textContent = pad(Math.floor((diff % 86400000) / 3600000));
+                document.getElementById('m').textContent = pad(Math.floor((diff % 3600000) / 60000));
+                document.getElementById('s').textContent = pad(Math.floor((diff % 60000) / 1000));
+            };
+            tick();
+            var timerId = setInterval(tick, 1000);
         }
 
-        // Το κουμπί που "κυνηγάει"
+        /* The runaway "NO" button */
+        const teases = ['ΟΧΙ', 'Σίγουρα;', 'Σκέψου το...', 'Έλα μωρέ!', 'Δεν γίνεται!', 'Πιάσε με 😜', 'Ντροπή!'];
+        let teaseIdx = 0;
         function moveButton() {
             const btn = document.getElementById('no-btn');
-            
-            // Υπολογισμός τυχαίας θέσης εντός των ορίων του παραθύρου
-            const maxX = window.innerWidth - btn.clientWidth - 50;
-            const maxY = window.innerHeight - btn.clientHeight - 50;
-            
-            const randomX = Math.floor(Math.random() * maxX);
-            const randomY = Math.floor(Math.random() * maxY);
-            
-            btn.style.left = randomX + 'px';
-            btn.style.top = randomY + 'px';
+            const pad = 20;
+            const maxX = Math.max(pad, window.innerWidth - btn.offsetWidth - pad);
+            const maxY = Math.max(pad, window.innerHeight - btn.offsetHeight - pad);
+            btn.style.left = (pad + Math.random() * (maxX - pad)) + 'px';
+            btn.style.top = (pad + Math.random() * (maxY - pad)) + 'px';
+            btn.style.transform = 'scale(' + (1 - teaseIdx * 0.07) + ') rotate(' + (Math.random() * 30 - 15) + 'deg)';
+            teaseIdx = Math.min(teaseIdx + 1, teases.length - 1);
+            btn.textContent = teases[teaseIdx];
         }
 
+        /* YES! -> confetti + message */
         function celebrate() {
-            alert("ΕΤΣΙ ΣΕ ΘΕΛΩ! 🍻 \n\nΕτοιμάσου, έχουμε να οργανώσουμε το καλύτερο bachelor στην ιστορία!");
+            launchConfetti();
+            setTimeout(function () {
+                alert("ΕΤΣΙ ΣΕ ΘΕΛΩ! 🍻\n\nΕτοιμάσου — έχουμε να οργανώσουμε το καλύτερο bachelor στην ιστορία!");
+            }, 400);
+        }
+
+        /* Lightweight confetti (no dependencies) */
+        function launchConfetti() {
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            canvas.style.display = 'block';
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const colors = ['#d4af37', '#f0d98c', '#ffffff', '#ff6b5e', '#ffd700'];
+            const pieces = Array.from({ length: 160 }, () => ({
+                x: Math.random() * canvas.width,
+                y: -20 - Math.random() * canvas.height,
+                w: 6 + Math.random() * 8,
+                h: 8 + Math.random() * 10,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                rot: Math.random() * Math.PI,
+                vr: (Math.random() - 0.5) * 0.3,
+                vy: 2 + Math.random() * 4,
+                vx: (Math.random() - 0.5) * 2
+            }));
+
+            let frames = 0;
+            (function frame() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.y += p.vy; p.x += p.vx; p.rot += p.vr;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rot);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+                frames++;
+                if (frames < 320) {
+                    requestAnimationFrame(frame);
+                } else {
+                    canvas.style.display = 'none';
+                }
+            })();
         }
     </script>
 </body>
