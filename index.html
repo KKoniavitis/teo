@@ -44,14 +44,31 @@
             gap: 3px;
         }
         .tile {
+            position: relative;
+            overflow: hidden;
             background-color: #0d0d0f;
-            background-size: contain;   /* show the whole photo, no cropping */
-            background-position: center center;
-            background-repeat: no-repeat;
-            filter: contrast(1.03) saturate(105%) brightness(1.05);
         }
         /* 5 photos in a 3x2 grid: the last one spans the final two cells */
         .tile:nth-child(5) { grid-column: span 2; }
+
+        .tile .lyr {
+            position: absolute;
+            inset: 0;
+            background-image: var(--img);
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+        /* Soft blurred copy fills the cell so there are no empty gaps */
+        .tile .blur {
+            background-size: cover;
+            filter: blur(22px) brightness(0.6) saturate(115%);
+            transform: scale(1.18);
+        }
+        /* The full photo on top, never cropped */
+        .tile .full {
+            background-size: contain;
+            filter: contrast(1.03) brightness(1.05);
+        }
 
         .bg-overlay {
             position: absolute;   /* taken out of the grid flow */
@@ -301,11 +318,11 @@
 <body>
 
     <div class="bg">
-        <div class="tile" style="background-image: url('friends.jpg')"></div>
-        <div class="tile" style="background-image: url('1.jpg')"></div>
-        <div class="tile" style="background-image: url('2.jpg')"></div>
-        <div class="tile" style="background-image: url('3.jpg')"></div>
-        <div class="tile" style="background-image: url('4.jpg')"></div>
+        <div class="tile" style="--img: url('friends.jpg')"><div class="lyr blur"></div><div class="lyr full"></div></div>
+        <div class="tile" style="--img: url('1.jpg')"><div class="lyr blur"></div><div class="lyr full"></div></div>
+        <div class="tile" style="--img: url('2.jpg')"><div class="lyr blur"></div><div class="lyr full"></div></div>
+        <div class="tile" style="--img: url('3.jpg')"><div class="lyr blur"></div><div class="lyr full"></div></div>
+        <div class="tile" style="--img: url('4.jpg')"><div class="lyr blur"></div><div class="lyr full"></div></div>
         <div class="bg-overlay"></div>
     </div>
     <div class="hearts" id="hearts"></div>
