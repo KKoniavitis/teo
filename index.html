@@ -386,6 +386,8 @@
 
         /* The "runaway" NO button (original logic + escape the card's
            containing block so position:fixed is viewport-relative) */
+        const teases = ['ΟΧΙ', 'Σίγουρα;', 'Σκέψου το...', 'Έλα μωρέ!', 'Δεν γίνεται!', 'Πιάσε με 😜', 'Ντροπή!'];
+        let teaseIdx = 0;
         let noBtnDetached = false;
         function moveButton() {
             const btn = document.getElementById('no-btn');
@@ -397,6 +399,10 @@
                 btn.classList.add('loose');
                 noBtnDetached = true;
             }
+
+            /* Cycle the teasing label */
+            teaseIdx = (teaseIdx + 1) % teases.length;
+            btn.textContent = teases[teaseIdx];
 
             const maxX = window.innerWidth - btn.clientWidth - 50;
             const maxY = window.innerHeight - btn.clientHeight - 50;
