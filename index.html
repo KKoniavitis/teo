@@ -163,11 +163,12 @@
         #no-btn {
             background: linear-gradient(135deg, #ff6b5e, #e74c3c);
             color: #fff;
-            position: fixed;
+            position: relative;
             transition: all 0.15s ease-out;
             z-index: 1000;
             box-shadow: 0 8px 22px rgba(231, 76, 60, 0.5);
         }
+        #no-btn.loose { position: fixed; }
 
         /* Countdown */
         #countdown {
@@ -383,9 +384,19 @@
             var timerId = setInterval(tick, 1000);
         }
 
-        /* The "runaway" NO button (original working logic) */
+        /* The "runaway" NO button (original logic + escape the card's
+           containing block so position:fixed is viewport-relative) */
+        let noBtnDetached = false;
         function moveButton() {
             const btn = document.getElementById('no-btn');
+
+            /* The .card has backdrop-filter/transform, which would make fixed
+               positioning relative to the card. Re-parent to <body> once. */
+            if (!noBtnDetached) {
+                document.body.appendChild(btn);
+                btn.classList.add('loose');
+                noBtnDetached = true;
+            }
 
             const maxX = window.innerWidth - btn.clientWidth - 50;
             const maxY = window.innerHeight - btn.clientHeight - 50;
