@@ -23,74 +23,50 @@
             background: #000;
             color: #f4f4f4;
             display: flex;
-            /* Card sits on the left so the photo (anchored right) stays visible */
-            justify-content: flex-start;
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 24px clamp(24px, 6vw, 90px);
+            padding: 24px;
             overflow: hidden;
             position: relative;
         }
 
-        /* Background crossfade slideshow + cinematic overlay */
+        /* Background photo collage (all 5 at once) + cinematic overlay */
         .bg {
             position: fixed;
             inset: 0;
             z-index: 0;
             background: #000;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 3px;
         }
-        .slide {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            will-change: opacity;
-            /* 5 photos, 7s each -> 35s loop */
-            animation: fadeSlide 35s infinite;
-        }
-        .slide:nth-child(1) { animation-delay: 0s; }
-        .slide:nth-child(2) { animation-delay: 7s; }
-        .slide:nth-child(3) { animation-delay: 14s; }
-        .slide:nth-child(4) { animation-delay: 21s; }
-        .slide:nth-child(5) { animation-delay: 28s; }
-
-        .slide .layer {
-            position: absolute;
-            inset: 0;
-            background-image: var(--img);
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
-        /* Blurred, screen-filling copy so there are no empty bars */
-        .slide .blur {
+        .tile {
             background-size: cover;
-            filter: blur(26px) brightness(0.65) saturate(110%);
-            transform: scale(1.15);
+            background-position: center center;
+            background-repeat: no-repeat;
+            filter: contrast(1.03) saturate(105%);
         }
-        /* The full photo, never cropped, anchored to the right (away from the card) */
-        .slide .full {
-            background-size: contain;
-            background-position: right center;
-            filter: contrast(1.02) brightness(1.04);
-        }
+        /* 5 photos in a 3x2 grid: the last one spans the final two cells */
+        .tile:nth-child(5) { grid-column: span 2; }
 
         .bg-overlay {
-            position: absolute;
+            position: absolute;   /* taken out of the grid flow */
             inset: 0;
             z-index: 1;
             background:
-                radial-gradient(ellipse at center, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.40) 100%),
-                linear-gradient(rgba(10,10,15,0.22), rgba(10,10,15,0.38));
+                radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.78) 80%),
+                linear-gradient(rgba(10,10,15,0.45), rgba(10,10,15,0.65));
         }
 
-        /* Each slide fades in, holds, then fades out.
-           One slide's active window = 20% of the 35s loop. */
-        @keyframes fadeSlide {
-            0%   { opacity: 0; }
-            3%   { opacity: 1; }
-            18%  { opacity: 1; }
-            21%  { opacity: 0; }
-            100% { opacity: 0; }
+        @media (max-width: 768px) {
+            .bg {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+            }
+            .tile:nth-child(5) { grid-column: span 2; }
         }
 
         /* Floating hearts */
@@ -311,16 +287,6 @@
             position: fixed; inset: 0; z-index: 5000; pointer-events: none; display: none;
         }
 
-        /* On narrow screens: card at the bottom, photo anchored to the top */
-        @media (max-width: 768px) {
-            body {
-                justify-content: center;
-                align-items: flex-end;
-                padding: 24px 18px 28px;
-            }
-            .slide .full { background-position: center top; }
-        }
-
         @media (max-width: 480px) {
             .card { padding: 2.2rem 1.5rem; }
             h1 { font-size: 2.2rem; }
@@ -333,11 +299,11 @@
 <body>
 
     <div class="bg">
-        <div class="slide" style="--img: url('friends.jpg')"><div class="layer blur"></div><div class="layer full"></div></div>
-        <div class="slide" style="--img: url('1.jpg')"><div class="layer blur"></div><div class="layer full"></div></div>
-        <div class="slide" style="--img: url('2.jpg')"><div class="layer blur"></div><div class="layer full"></div></div>
-        <div class="slide" style="--img: url('3.jpg')"><div class="layer blur"></div><div class="layer full"></div></div>
-        <div class="slide" style="--img: url('4.jpg')"><div class="layer blur"></div><div class="layer full"></div></div>
+        <div class="tile" style="background-image: url('friends.jpg')"></div>
+        <div class="tile" style="background-image: url('1.jpg')"></div>
+        <div class="tile" style="background-image: url('2.jpg')"></div>
+        <div class="tile" style="background-image: url('3.jpg')"></div>
+        <div class="tile" style="background-image: url('4.jpg')"></div>
         <div class="bg-overlay"></div>
     </div>
     <div class="hearts" id="hearts"></div>
