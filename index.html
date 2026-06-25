@@ -163,11 +163,11 @@
         #no-btn {
             background: linear-gradient(135deg, #ff6b5e, #e74c3c);
             color: #fff;
-            position: relative;
+            position: fixed;
+            transition: all 0.15s ease-out;
             z-index: 1000;
             box-shadow: 0 8px 22px rgba(231, 76, 60, 0.5);
         }
-        #no-btn.loose { position: fixed; transition: none; }
 
         /* Countdown */
         #countdown {
@@ -306,7 +306,7 @@
 
             <div class="btn-container">
                 <button class="btn" onclick="celebrate()">ΕΝΝΟΕΙΤΑΙ!</button>
-                <button class="btn" id="no-btn" type="button">ΟΧΙ</button>
+                <button class="btn" id="no-btn" onmouseover="moveButton()">ΟΧΙ</button>
             </div>
 
             <div id="countdown">
@@ -383,42 +383,19 @@
             var timerId = setInterval(tick, 1000);
         }
 
-        /* The unclickable runaway "NO" button (proven simple logic) */
-        const noBtn = document.getElementById('no-btn');
-        const teases = ['ΟΧΙ', 'Σίγουρα;', 'Σκέψου το...', 'Έλα μωρέ!', 'Δεν γίνεται!', 'Πιάσε με 😜', 'Ντροπή!'];
-        let teaseIdx = 0;
+        /* The "runaway" NO button (original working logic) */
+        function moveButton() {
+            const btn = document.getElementById('no-btn');
 
-        function dodge(e) {
-            if (e) e.preventDefault();
+            const maxX = window.innerWidth - btn.clientWidth - 50;
+            const maxY = window.innerHeight - btn.clientHeight - 50;
 
-            /* Change the label first, then switch to fixed, then measure final size */
-            teaseIdx = (teaseIdx + 1) % teases.length;
-            noBtn.textContent = teases[teaseIdx];
-            noBtn.classList.add('loose');
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
 
-            const margin = 20;
-            const vw = document.documentElement.clientWidth;   // visible width, no scrollbar
-            const vh = document.documentElement.clientHeight;
-            const w = noBtn.offsetWidth;
-            const h = noBtn.offsetHeight;
-
-            const maxX = Math.max(margin, vw - w - margin);
-            const maxY = Math.max(margin, vh - h - margin);
-            let x = margin + Math.random() * (maxX - margin);
-            let y = margin + Math.random() * (maxY - margin);
-
-            /* Hard clamp (belt & suspenders) so it can never exceed the viewport */
-            x = Math.min(Math.max(margin, x), maxX);
-            y = Math.min(Math.max(margin, y), maxY);
-
-            noBtn.style.left = Math.round(x) + 'px';
-            noBtn.style.top = Math.round(y) + 'px';
+            btn.style.left = randomX + 'px';
+            btn.style.top = randomY + 'px';
         }
-
-        /* Run away on hover / tap / attempted click, never let a click land */
-        ['mouseover', 'touchstart', 'click'].forEach(function (evt) {
-            noBtn.addEventListener(evt, dodge, { passive: false });
-        });
 
         /* YES! -> flip the card to a celebration screen (no alert) */
         function celebrate() {
