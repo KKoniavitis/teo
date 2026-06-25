@@ -254,7 +254,7 @@
 
             <div class="btn-container">
                 <button class="btn" onclick="celebrate()">ΕΝΝΟΕΙΤΑΙ!</button>
-                <button class="btn" id="no-btn" onmouseover="moveButton()" onclick="moveButton()">ΟΧΙ</button>
+                <button class="btn" id="no-btn" type="button">ΟΧΙ</button>
             </div>
 
             <div id="countdown">
@@ -316,20 +316,45 @@
             var timerId = setInterval(tick, 1000);
         }
 
-        /* The runaway "NO" button */
+        /* The unclickable runaway "NO" button */
+        const noBtn = document.getElementById('no-btn');
         const teases = ['ΟΧΙ', 'Σίγουρα;', 'Σκέψου το...', 'Έλα μωρέ!', 'Δεν γίνεται!', 'Πιάσε με 😜', 'Ντροπή!'];
         let teaseIdx = 0;
-        function moveButton() {
-            const btn = document.getElementById('no-btn');
-            const pad = 20;
-            const maxX = Math.max(pad, window.innerWidth - btn.offsetWidth - pad);
-            const maxY = Math.max(pad, window.innerHeight - btn.offsetHeight - pad);
-            btn.style.left = (pad + Math.random() * (maxX - pad)) + 'px';
-            btn.style.top = (pad + Math.random() * (maxY - pad)) + 'px';
-            btn.style.transform = 'scale(' + (1 - teaseIdx * 0.07) + ') rotate(' + (Math.random() * 30 - 15) + 'deg)';
-            teaseIdx = Math.min(teaseIdx + 1, teases.length - 1);
-            btn.textContent = teases[teaseIdx];
+        let dodging = false;
+
+        function dodge(e) {
+            if (e) e.preventDefault();
+            const margin = 16;
+            const w = noBtn.offsetWidth;
+            const h = noBtn.offsetHeight;
+            if (!dodging) {
+                dodging = true;
+                noBtn.style.position = 'fixed';
+            }
+            const maxLeft = Math.max(margin, window.innerWidth - w - margin);
+            const maxTop = Math.max(margin, window.innerHeight - h - margin);
+            noBtn.style.left = (margin + Math.random() * (maxLeft - margin)) + 'px';
+            noBtn.style.top = (margin + Math.random() * (maxTop - margin)) + 'px';
+            noBtn.style.transform = 'rotate(' + (Math.random() * 24 - 12) + 'deg)';
+            teaseIdx = (teaseIdx + 1) % teases.length;
+            noBtn.textContent = teases[teaseIdx];
         }
+
+        /* Run away on any attempt to interact (mouse + touch), never let a click land */
+        ['mouseenter', 'mouseover', 'pointerdown', 'touchstart', 'click'].forEach(function (evt) {
+            noBtn.addEventListener(evt, dodge, { passive: false });
+        });
+
+        /* Flee when the cursor merely gets close, so it stays catchable-proof but visible */
+        document.addEventListener('mousemove', function (e) {
+            const r = noBtn.getBoundingClientRect();
+            const cx = r.left + r.width / 2;
+            const cy = r.top + r.height / 2;
+            if (Math.hypot(e.clientX - cx, e.clientY - cy) < 90) dodge();
+        });
+
+        /* Keep it on-screen if the window is resized */
+        window.addEventListener('resize', function () { if (dodging) dodge(); });
 
         /* YES! -> confetti + message */
         function celebrate() {
