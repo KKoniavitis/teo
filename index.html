@@ -329,7 +329,7 @@
             <div class="divider"></div>
             <p class="lead">Από εδώ και πέρα είσαι επίσημα<br><b class="role">ο Κουμπάρος μου.</b></p>
             <p class="sub">Ετοιμάσου — έχουμε να οργανώσουμε <br>το καλύτερο bachelor στην ιστορία. 😏</p>
-            <span class="date-pill">RANDEVOU: 22 ΜΑΪΟΥ 2027</span>
+            <span class="date-pill">Ραντεβού: 22 ΜΑΪΟΥ 2027</span>
             <div class="btn-container" style="min-height:auto; margin-top:1.6rem;">
                 <button class="btn ghost" type="button" onclick="moreConfetti()">Άλλη μια φορά! 🎉</button>
             </div>
@@ -398,19 +398,31 @@
             /* Update the label + tilt FIRST so we measure the real (new) size */
             teaseIdx = (teaseIdx + 1) % teases.length;
             noBtn.textContent = teases[teaseIdx];
-            const tilt = Math.random() * 24 - 12;
-            noBtn.style.transform = 'rotate(' + tilt + 'deg)';
+            noBtn.style.transform = 'rotate(' + (Math.random() * 20 - 10) + 'deg)';
 
-            /* Measure after the text/rotation change, then clamp inside the viewport.
-               Extra padding accounts for the bounding box growing when rotated. */
-            const margin = 16;
-            const rotPad = 12;
-            const w = noBtn.offsetWidth + rotPad;
-            const h = noBtn.offsetHeight + rotPad;
-            const maxLeft = Math.max(margin, window.innerWidth - w - margin);
-            const maxTop = Math.max(margin, window.innerHeight - h - margin);
-            noBtn.style.left = (margin + Math.random() * (maxLeft - margin)) + 'px';
-            noBtn.style.top = (margin + Math.random() * (maxTop - margin)) + 'px';
+            /* Use clientWidth/Height (excludes scrollbars) for the real visible area */
+            const margin = 14;
+            const vw = document.documentElement.clientWidth;
+            const vh = document.documentElement.clientHeight;
+            const w = noBtn.offsetWidth;
+            const h = noBtn.offsetHeight;
+            let left = margin + Math.random() * Math.max(0, vw - w - margin * 2);
+            let top = margin + Math.random() * Math.max(0, vh - h - margin * 2);
+            noBtn.style.left = left + 'px';
+            noBtn.style.top = top + 'px';
+
+            /* Safety net: read the ACTUAL rendered box (includes rotation) and pull
+               it back inside if any edge still pokes out of the viewport. */
+            const r = noBtn.getBoundingClientRect();
+            let dx = 0, dy = 0;
+            if (r.left < margin) dx = margin - r.left;
+            else if (r.right > vw - margin) dx = (vw - margin) - r.right;
+            if (r.top < margin) dy = margin - r.top;
+            else if (r.bottom > vh - margin) dy = (vh - margin) - r.bottom;
+            if (dx || dy) {
+                noBtn.style.left = (left + dx) + 'px';
+                noBtn.style.top = (top + dy) + 'px';
+            }
         }
 
         /* Run away on any attempt to interact (mouse + touch), never let a click land */
