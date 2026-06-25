@@ -213,6 +213,58 @@
         }
 
         #question-area { display: none; }
+        #success-area { display: none; }
+
+        /* Celebration screen */
+        #success-area .lead { font-size: 1.15rem; color: #fff; }
+        #success-area .role {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.7rem;
+            color: var(--gold-soft);
+        }
+        #success-area .sub { font-size: 0.95rem; color: #d8d8da; }
+
+        .seal {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .seal-emoji {
+            font-size: 3.2rem;
+            animation: pop 0.7s cubic-bezier(.2,1.4,.4,1) both;
+            filter: drop-shadow(0 6px 14px rgba(0,0,0,0.5));
+        }
+        .seal-ring {
+            position: absolute; inset: 0;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 30px rgba(212,175,55,0.5), inset 0 0 20px rgba(212,175,55,0.25);
+            animation: pulseRing 2.4s ease-out infinite;
+        }
+        @keyframes pop {
+            0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+        @keyframes pulseRing {
+            0% { transform: scale(0.85); opacity: 0.9; }
+            70% { transform: scale(1.25); opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        .btn.ghost {
+            background: transparent;
+            color: var(--gold-soft);
+            border: 1px solid rgba(212,175,55,0.6);
+            box-shadow: none;
+        }
+        .btn.ghost:hover {
+            background: rgba(212,175,55,0.12);
+            box-shadow: 0 8px 22px rgba(212,175,55,0.25);
+        }
 
         .fade-in { animation: cardIn 0.7s cubic-bezier(.2,.8,.2,1) both; }
 
@@ -265,6 +317,21 @@
                     <div class="time-box"><div class="num" id="m">--</div><span class="unit">Λεπτά</span></div>
                     <div class="time-box"><div class="num" id="s">--</div><span class="unit">Δευτ.</span></div>
                 </div>
+            </div>
+        </div>
+
+        <div id="success-area">
+            <div class="seal">
+                <div class="seal-ring"></div>
+                <span class="seal-emoji">🍻</span>
+            </div>
+            <h1>ΕΤΣΙ ΣΕ ΘΕΛΩ!</h1>
+            <div class="divider"></div>
+            <p class="lead">Από εδώ και πέρα είσαι επίσημα<br><b class="role">ο Κουμπάρος μου.</b></p>
+            <p class="sub">Ετοιμάσου — έχουμε να οργανώσουμε <br>το καλύτερο bachelor στην ιστορία. 😏</p>
+            <span class="date-pill">RANDEVOU: 22 ΜΑΪΟΥ 2027</span>
+            <div class="btn-container" style="min-height:auto; margin-top:1.6rem;">
+                <button class="btn ghost" type="button" onclick="moreConfetti()">Άλλη μια φορά! 🎉</button>
             </div>
         </div>
     </div>
@@ -356,12 +423,36 @@
         /* Keep it on-screen if the window is resized */
         window.addEventListener('resize', function () { if (dodging) dodge(); });
 
-        /* YES! -> confetti + message */
+        /* YES! -> flip the card to a celebration screen (no alert) */
         function celebrate() {
+            document.getElementById('question-area').style.display = 'none';
+            const s = document.getElementById('success-area');
+            s.style.display = 'block';
+            s.classList.add('fade-in');
             launchConfetti();
-            setTimeout(function () {
-                alert("ΕΤΣΙ ΣΕ ΘΕΛΩ! 🍻\n\nΕτοιμάσου — έχουμε να οργανώσουμε το καλύτερο bachelor στην ιστορία!");
-            }, 400);
+            burstHearts();
+        }
+
+        function moreConfetti() {
+            launchConfetti();
+            burstHearts();
+        }
+
+        /* A quick shower of celebratory emojis raining down */
+        function burstHearts() {
+            const wrap = document.getElementById('hearts');
+            const symbols = ['🍻', '🥂', '🎉', '🤍', '🤵', '💛', '✨', '🍾'];
+            for (let i = 0; i < 28; i++) {
+                const h = document.createElement('div');
+                h.className = 'heart';
+                h.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.fontSize = (18 + Math.random() * 26) + 'px';
+                h.style.animationDuration = (5 + Math.random() * 5) + 's';
+                h.style.animationDelay = (Math.random() * 0.6) + 's';
+                wrap.appendChild(h);
+                setTimeout(function () { h.remove(); }, 11000);
+            }
         }
 
         /* Lightweight confetti (no dependencies) */
