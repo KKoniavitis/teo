@@ -164,11 +164,10 @@
             background: linear-gradient(135deg, #ff6b5e, #e74c3c);
             color: #fff;
             position: relative;
-            transition: top 0.18s ease-out, left 0.18s ease-out;
             z-index: 1000;
             box-shadow: 0 8px 22px rgba(231, 76, 60, 0.5);
         }
-        #no-btn.loose { position: fixed; }
+        #no-btn.loose { position: fixed; transition: none; }
 
         /* Countdown */
         #countdown {
@@ -392,19 +391,26 @@
         function dodge(e) {
             if (e) e.preventDefault();
 
-            /* Change the label first, then measure the real size with that text */
+            /* Change the label first, then switch to fixed, then measure final size */
             teaseIdx = (teaseIdx + 1) % teases.length;
             noBtn.textContent = teases[teaseIdx];
-
-            /* Switch to fixed positioning only now (it starts in the normal row) */
             noBtn.classList.add('loose');
 
             const margin = 20;
+            const vw = document.documentElement.clientWidth;   // visible width, no scrollbar
+            const vh = document.documentElement.clientHeight;
             const w = noBtn.offsetWidth;
             const h = noBtn.offsetHeight;
-            /* x is in [margin, innerWidth - w - margin]  ->  always fully on-screen */
-            const x = margin + Math.random() * Math.max(0, window.innerWidth - w - margin * 2);
-            const y = margin + Math.random() * Math.max(0, window.innerHeight - h - margin * 2);
+
+            const maxX = Math.max(margin, vw - w - margin);
+            const maxY = Math.max(margin, vh - h - margin);
+            let x = margin + Math.random() * (maxX - margin);
+            let y = margin + Math.random() * (maxY - margin);
+
+            /* Hard clamp (belt & suspenders) so it can never exceed the viewport */
+            x = Math.min(Math.max(margin, x), maxX);
+            y = Math.min(Math.max(margin, y), maxY);
+
             noBtn.style.left = Math.round(x) + 'px';
             noBtn.style.top = Math.round(y) + 'px';
         }
