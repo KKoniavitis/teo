@@ -383,63 +383,30 @@
             var timerId = setInterval(tick, 1000);
         }
 
-        /* The unclickable runaway "NO" button */
+        /* The unclickable runaway "NO" button (proven simple logic) */
         const noBtn = document.getElementById('no-btn');
         const teases = ['ΟΧΙ', 'Σίγουρα;', 'Σκέψου το...', 'Έλα μωρέ!', 'Δεν γίνεται!', 'Πιάσε με 😜', 'Ντροπή!'];
         let teaseIdx = 0;
-        let dodging = false;
 
         function dodge(e) {
             if (e) e.preventDefault();
-            if (!dodging) {
-                dodging = true;
-                noBtn.style.position = 'fixed';
-            }
-            /* Update the label + tilt FIRST so we measure the real (new) size */
+            noBtn.style.position = 'fixed';
+
+            /* Change the label first, then measure the real width with that text */
             teaseIdx = (teaseIdx + 1) % teases.length;
             noBtn.textContent = teases[teaseIdx];
-            noBtn.style.transform = 'rotate(' + (Math.random() * 20 - 10) + 'deg)';
 
-            /* Use clientWidth/Height (excludes scrollbars) for the real visible area */
-            const margin = 14;
-            const vw = document.documentElement.clientWidth;
-            const vh = document.documentElement.clientHeight;
-            const w = noBtn.offsetWidth;
-            const h = noBtn.offsetHeight;
-            let left = margin + Math.random() * Math.max(0, vw - w - margin * 2);
-            let top = margin + Math.random() * Math.max(0, vh - h - margin * 2);
-            noBtn.style.left = left + 'px';
-            noBtn.style.top = top + 'px';
-
-            /* Safety net: read the ACTUAL rendered box (includes rotation) and pull
-               it back inside if any edge still pokes out of the viewport. */
-            const r = noBtn.getBoundingClientRect();
-            let dx = 0, dy = 0;
-            if (r.left < margin) dx = margin - r.left;
-            else if (r.right > vw - margin) dx = (vw - margin) - r.right;
-            if (r.top < margin) dy = margin - r.top;
-            else if (r.bottom > vh - margin) dy = (vh - margin) - r.bottom;
-            if (dx || dy) {
-                noBtn.style.left = (left + dx) + 'px';
-                noBtn.style.top = (top + dy) + 'px';
-            }
+            const margin = 50;
+            const maxX = Math.max(0, window.innerWidth - noBtn.clientWidth - margin);
+            const maxY = Math.max(0, window.innerHeight - noBtn.clientHeight - margin);
+            noBtn.style.left = Math.floor(Math.random() * maxX) + 'px';
+            noBtn.style.top = Math.floor(Math.random() * maxY) + 'px';
         }
 
-        /* Run away on any attempt to interact (mouse + touch), never let a click land */
-        ['mouseenter', 'mouseover', 'pointerdown', 'touchstart', 'click'].forEach(function (evt) {
+        /* Run away on hover / tap / attempted click, never let a click land */
+        ['mouseover', 'touchstart', 'click'].forEach(function (evt) {
             noBtn.addEventListener(evt, dodge, { passive: false });
         });
-
-        /* Flee when the cursor merely gets close, so it stays catchable-proof but visible */
-        document.addEventListener('mousemove', function (e) {
-            const r = noBtn.getBoundingClientRect();
-            const cx = r.left + r.width / 2;
-            const cy = r.top + r.height / 2;
-            if (Math.hypot(e.clientX - cx, e.clientY - cy) < 90) dodge();
-        });
-
-        /* Keep it on-screen if the window is resized */
-        window.addEventListener('resize', function () { if (dodging) dodge(); });
 
         /* YES! -> flip the card to a celebration screen (no alert) */
         function celebrate() {
